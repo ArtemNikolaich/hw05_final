@@ -2,9 +2,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.cache import cache_page
 
 from .forms import CommentForm, PostForm
-from .models import Comment, Follow, Group, Post
+from .models import Follow, Group, Post
 
 POST_OBJ = 10
 User = get_user_model()
@@ -17,6 +18,7 @@ def paginate_posts(request, post_list):
     return page_obj
 
 
+@cache_page(20)
 def index(request):
     posts = Post.objects.select_related('group')[:POST_OBJ]
     post_list = Post.objects.all()
@@ -65,7 +67,7 @@ def profile(request, username):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     author_posts = Post.objects.filter(author=post.author)
-    comments = Comment.objects.filter(post=post)
+    comments = post.comments.all()
     form = CommentForm()
     context = {
         'post': post,
@@ -91,7 +93,7 @@ def post_create(request):
 
 @login_required
 def post_edit(request, post_id):
-    post = Post.objects.get(pk=post_id)
+    post = get_object_or_404(Post, pk=post_id)
     if request.user != post.author:
         return redirect('posts:post_detail', post_id=post.id)
     form = PostForm(
@@ -127,10 +129,7 @@ def add_comment(request, post_id):
 @login_required
 def follow_index(request):
     user = request.user
-    following = Follow.objects.filter(user=user).values_list(
-        'author', flat=True
-    )
-    posts = Post.objects.filter(author__in=following).select_related(
+    posts = Post.objects.filter(author__following__user=user).select_related(
         'group').order_by('-created')
     page_obj = paginate_posts(request, posts)
     context = {
