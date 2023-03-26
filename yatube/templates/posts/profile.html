@@ -12,7 +12,7 @@
     >
       Отписаться
     </a>
-  {% else %}
+  {% elif user.username != author.username %}
       <a
         class="btn btn-lg btn-primary"
         href="{% url 'posts:profile_follow' author.username %}" role="button"
@@ -24,10 +24,10 @@
         <article>
         {% for post in page_obj %}  
         {% include 'includes/posts.html' %}
-          <a href="{% url 'posts:post_detail' post.pk %}">подробная информация </a><br>
-        </article> 
+        </article>
+        <a href="{% url 'posts:post_detail' post.pk %}">Подробная информация </a><br> 
         {% if post.group %}      
-        <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a><br>
+        <a href="{% url 'posts:group_list' post.group.slug %}">Все записи группы</a><br>
         {% endif %}
         {% endfor %}     
         {% include 'posts/includes/paginator.html' %}

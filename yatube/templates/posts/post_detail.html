@@ -11,7 +11,7 @@
             <li class="list-group-item">
               Группа: {{ group.title }}
               {% if post.group %}
-              <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
+              <a href="{% url 'posts:group_list' post.group.slug %}">Все записи группы</a>
               {% endif %}
               {% if not forloop.last %}<hr>{% endif %}
             </li>
@@ -22,7 +22,7 @@
               Всего постов автора:  <span >{{ total_posts }}</span>
             </li>
             <li class="list-group-item">
-              <a href="{% url 'posts:profile' post.author.username %}">все посты пользователя</a>
+              <a href="{% url 'posts:profile' post.author.username %}">Все посты пользователя</a>
             </li>
           </ul>
         </aside>
@@ -35,7 +35,7 @@
           </p>
           {% if request.user == post.author %}
           <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">
-          редактировать запись
+          Редактировать запись
           </a>
           {% endif %}
           <!-- Форма добавления комментария -->
